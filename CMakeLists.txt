@@ -11,6 +11,9 @@ FetchContent_MakeAvailable(glfw)
 FetchContent_Declare(glm GIT_REPOSITORY https://github.com/g-truc/glm.git GIT_TAG 1.0.1)
 FetchContent_MakeAvailable(glm)
 
+FILE(COPY ${CMAKE_SOURCE_DIR}/shaders DESTINATION ${CMAKE_BINARY_DIR})
+FILE(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
+
 add_executable(OpenGLPBR
         source/main.cpp
         src/glad.c
