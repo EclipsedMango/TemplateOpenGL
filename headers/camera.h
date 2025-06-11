@@ -12,11 +12,11 @@ enum CameraMovement {
 	RIGHT
 };
 
-const float YAW = -90.0f;
-const float PITCH = 0.0f;
-const float SPEED = 8.0f;
-const float SENSITIVITY = 0.1f;
-const float ZOOM = 45.0f;
+constexpr float YAW = -90.0f;
+constexpr float PITCH = 0.0f;
+constexpr float SPEED = 8.0f;
+constexpr float SENSITIVITY = 0.1f;
+constexpr float ZOOM = 45.0f;
 
 class Camera {
 public:
@@ -51,12 +51,12 @@ public:
 		updateCameraVectors();
 	}
 
-	glm::mat4 GetViewMatrix() {
-		return glm::lookAt(Position, Position + Front, Up);
+	glm::mat4 GetViewMatrix() const {
+		return lookAt(Position, Position + Front, Up);
 	}
 
-	void ProcessKeyboard(CameraMovement direction, float deltaTime) {
-		float velocity = MoveSpeed * deltaTime;
+	void ProcessKeyboard(const CameraMovement direction, const float deltaTime) {
+		const float velocity = MoveSpeed * deltaTime;
 		if (direction == FORWARD)
 			Position += Front * velocity;
 		if (direction == BACKWARD)
@@ -67,7 +67,7 @@ public:
 			Position += Right * velocity;
 	}
 
-	void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true) {
+	void ProcessMouseMovement(float xoffset, float yoffset, const GLboolean constrainPitch = true) {
 		xoffset *= Sens;
 		yoffset *= Sens;
 
@@ -83,21 +83,22 @@ public:
 	}
 
 	void ProcessMouseScroll(float yoffset) {
-		Zoom -= (float)yoffset;
+		Zoom -= yoffset;
 		if (Zoom < 1.0f) { Zoom = 1.0f; }
 		if (Zoom > 45.0f) { Zoom = 45.0f; }
 	}
 
 private:
 	void updateCameraVectors() {
-		glm::vec3 front = glm::vec3(
+		const glm::vec3 front = glm::vec3(
 			cos(glm::radians(Yaw)) * cos(glm::radians(Pitch)),
 			sin(glm::radians(Pitch)),
-			sin(glm::radians(Yaw)) * cos(glm::radians(Pitch)));
+			sin(glm::radians(Yaw)) * cos(glm::radians(Pitch))
+		);
 
-		Front = glm::normalize(front);
-		Right = glm::normalize(glm::cross(Front, WorldUp));
-		Up = glm::normalize(glm::cross(Right, Front));
+		Front = normalize(front);
+		Right = normalize(cross(Front, WorldUp));
+		Up = normalize(cross(Right, Front));
 	}
 };
 

@@ -17,6 +17,10 @@ public:
     Mesh* mesh = {};
     std::vector<Texture*> textures;
 
+    explicit Object3D(Mesh* assignedMesh) {
+        mesh = assignedMesh;
+    };
+
     glm::mat4 getModelMatrix() const {
         glm::mat4 mat = translate(glm::mat4(1.0f), position);
         mat = rotate(mat, glm::radians(rotation.x), glm::vec3(1, 0, 0));

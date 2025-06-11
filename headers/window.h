@@ -14,7 +14,7 @@ public:
 	static inline bool firstMouse = true;
 	static inline bool captureMouse = true;
 
-	static GLFWwindow* initWindow(int width, int height, const char* title) {
+	static GLFWwindow* initWindow(const int width, const int height, const char* title) {
         if (!glfwInit()) {
             std::cout << "Failed to initialize window\n";
             return nullptr;
@@ -49,7 +49,7 @@ public:
 
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height) { glViewport(0, 0, width, height); }
 	static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) { camera.ProcessMouseScroll(static_cast<float>(yoffset)); }
-	static void processInput(GLFWwindow *window, float deltaTime) {
+	static void processInput(GLFWwindow *window, const float deltaTime) {
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) { camera.ProcessKeyboard(FORWARD, deltaTime); }
 	    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) { camera.ProcessKeyboard(BACKWARD, deltaTime); }
 	    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { camera.ProcessKeyboard(LEFT, deltaTime); }

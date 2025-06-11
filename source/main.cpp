@@ -96,8 +96,7 @@ int main() {
 		20,21,22, 22,23,20
 	};
 
-	Object3D cube;
-	cube.mesh = &cubeMesh;
+	Object3D cube = Object3D(&cubeMesh);
 
     Texture texture1("../assets/serble_logo.png", GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, true);
     Texture texture2("../assets/aXR5PTgw.png", GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, true);
