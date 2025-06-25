@@ -18,6 +18,13 @@ add_executable(OpenGLPBR
         source/main.cpp
         src/glad.c
         source/shader.cpp
+        headers/renderAPI.h
+        headers/MathHeaders/Vector2.h
+        headers/MathHeaders/Vector3.h
+        headers/MathHeaders/Vector4.h
+        headers/MathHeaders/Matrix4.h
+        headers/MathHeaders/Matrix3.h
+        headers/MathHeaders/Colour.h
 )
 
 target_link_libraries(OpenGLPBR glfw ${CMAKE_DL_LIBS})

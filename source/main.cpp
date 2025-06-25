@@ -29,18 +29,29 @@ void countFrames();
 
 int main() {
     // Window initialization and creation.
-	GLFWwindow* window = Window::initWindow(windowWidth, windowHeight, "LearningOpenGL");
-    if (!window) { 
-        std::cout << "Null window\n";
-    	return -1;
-    }
+	if (!glfwInit()) {
+		std::cout << "Failed to initialize window\n";
+	}
 
-    glfwMakeContextCurrent(window);
-	glfwSwapInterval(0);
+	std::unique_ptr<Window> window = nullptr;
+	window = std::make_unique<GLFWOpenGLWindow>();
+
+	window->createWindow({windowWidth, windowHeight}, "LearningOpenGL");
+	window->setMouseInput(true);
+	window->setActiveWindow();
+
+	if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
+		throw std::runtime_error("Failed to initialize GLAD");
+	}
+
+	window->setCallBacks();
 
 	ShaderManager shaderManager;
 
     Shader ourShader("../shaders/vertex.vs", "../shaders/fragment.fs");
+	Shader testShader("../shaders/vertex.vs", "../Shaders/fragment2.fs");
+
+	shaderManager.registerShader(&testShader);
 	shaderManager.registerShader(&ourShader);
 
 	Mesh cubeMesh;
@@ -97,6 +108,7 @@ int main() {
 	};
 
 	Object3D cube = Object3D(&cubeMesh);
+	Object3D lightCube = Object3D(&cubeMesh);
 
     Texture texture1("../assets/serble_logo.png", GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, true);
     Texture texture2("../assets/aXR5PTgw.png", GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, true);
@@ -105,6 +117,7 @@ int main() {
 	cube.textures.push_back(&texture2);
 
 	cube.bindMeshBuffers();
+	lightCube.bindMeshBuffers();
 
 	// Uncomment for wireframe view.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -112,13 +125,13 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.11f, 0.11f, 0.12f, 1.0f);
 
-	while(!glfwWindowShouldClose(window)) {
+	while(!window->shouldWindowClose()) {
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
 		countFrames();
-        Window::processInput(window, deltaTime);
+        window->processInput(deltaTime, camera);
 
 		// Rendering
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -132,8 +145,11 @@ int main() {
 		cube.rotation = {0, (glfwGetTime() * 5.0f) * 50.0f, 0};
 		cube.draw(ourShader);
 
+		lightCube.position = {-2, 0, 0};
+		lightCube.draw(testShader);
+
         // Check and call events and swap the buffers
-        glfwSwapBuffers(window);
+        window->swapBuffers();
         glfwPollEvents();
     }
 
