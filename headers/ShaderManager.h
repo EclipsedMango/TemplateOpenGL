@@ -2,7 +2,7 @@
 #define SHADERMANAGER_H
 #include <vector>
 
-#include "shader.h"
+#include "Shader.h"
 
 class ShaderManager {
     std::pmr::vector<Shader*> shaders;

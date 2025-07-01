@@ -11,22 +11,18 @@ FetchContent_MakeAvailable(glfw)
 FetchContent_Declare(glm GIT_REPOSITORY https://github.com/g-truc/glm.git GIT_TAG 1.0.1)
 FetchContent_MakeAvailable(glm)
 
-#FILE(COPY ${CMAKE_SOURCE_DIR}/shaders DESTINATION ${CMAKE_BINARY_DIR})
-#FILE(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
-
 add_executable(OpenGLPBR
         source/main.cpp
         src/glad.c
+        include/stb_image/stb_image.h
         source/shader.cpp
-        headers/renderAPI.h
-        headers/MathHeaders/Vector2.h
-        headers/MathHeaders/Vector3.h
-        headers/MathHeaders/Vector4.h
-        headers/MathHeaders/Matrix4.h
-        headers/MathHeaders/Matrix3.h
-        headers/MathHeaders/Colour.h
+        headers/Shader.h
+        headers/ShaderManager.h
+        headers/Window.h
+        headers/Texture.h
 )
 
 target_link_libraries(OpenGLPBR glfw ${CMAKE_DL_LIBS})
 target_include_directories(OpenGLPBR PRIVATE include)
+target_include_directories(OpenGLPBR PRIVATE headers)
 target_include_directories(OpenGLPBR PRIVATE include ${glm_SOURCE_DIR})

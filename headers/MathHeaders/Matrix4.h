@@ -16,6 +16,7 @@ namespace emc {
 		float* mm[4] = {&m1, &m5, &m9, &m13};
 
         Matrix4() { m1 = m2 = m3 = m4 = m5 = m6 = m7 = m8 = m9 = m10 = m11 = m12 = m13 = m14 = m15 = m16 = 0; }
+    	Matrix4(const float val) { m1 = m2 = m3 = m4 = m5 = m6 = m7 = m8 = m9 = m10 = m11 = m12 = m13 = m14 = m15 = m16 = val; }
 
         Matrix4(const float m1, const float m2, const float m3, const float m4, const float m5, 
 				const float m6, const float m7, const float m8, const float m9, const float m10, 

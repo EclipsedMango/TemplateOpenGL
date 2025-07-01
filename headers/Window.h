@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "MathHeaders/Vector2.h"
+#include "Camera.h"
 
 extern Camera camera;
 
@@ -97,6 +98,7 @@ public:
 
 	void swapBuffers() override {
 		glfwSwapBuffers(m_window);
+		glfwPollEvents();
 	}
 
 	void setTitle(const std::string &title) override {

@@ -8,15 +8,15 @@
 #include <filesystem>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <../include/stb_image/stb_image.h>
 
-#include "../headers/shader.h"
-#include "../headers/camera.h"
-#include "../headers/mesh.h"
-#include "../headers/object3d.h"
-#include "../headers/shaderManager.h"
-#include "../headers/window.h"
-#include "../headers/texture.h"
+#include "../headers/Camera.h"
+#include "../headers/Mesh.h"
+#include "../headers/Object3d.h"
+#include "../headers/RenderAPI.h"
+#include "../headers/Shader.h"
+#include "../headers/ShaderManager.h"
+#include "../headers/Window.h"
+#include "../headers/Texture.h"
 
 constexpr int windowWidth = 1200;
 constexpr int windowHeight = 800;
@@ -33,18 +33,16 @@ int main() {
 		std::cout << "Failed to initialize window\n";
 	}
 
-	std::unique_ptr<Window> window = nullptr;
-	window = std::make_unique<GLFWOpenGLWindow>();
+	Window* window = new GLFWOpenGLWindow;
 
 	window->createWindow({windowWidth, windowHeight}, "LearningOpenGL");
 	window->setMouseInput(true);
 	window->setActiveWindow();
 
-	if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
-		throw std::runtime_error("Failed to initialize GLAD");
-	}
-
 	window->setCallBacks();
+
+	const auto api = std::make_unique<OpenGlRenderAPI>();
+	api->init();
 
 	ShaderManager shaderManager;
 
@@ -54,8 +52,8 @@ int main() {
 	shaderManager.registerShader(&testShader);
 	shaderManager.registerShader(&ourShader);
 
-	Mesh cubeMesh;
-	cubeMesh.vertices = {
+	Mesh* cubeMesh = new Mesh();
+	cubeMesh->vertices = {
 		// Back face
 		{{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}},
 		{{ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}},
@@ -92,7 +90,7 @@ int main() {
 		{{ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}},
 		{{-0.5f,  0.5f,  0.5f}, {0.0f, 0.0f}},
 	};
-	cubeMesh.indices = {
+	cubeMesh->indices = {
 		// Back face
 		0, 1, 2,  2, 3, 0,
 		// Front face
@@ -107,8 +105,10 @@ int main() {
 		20,21,22, 22,23,20
 	};
 
-	Object3D cube = Object3D(&cubeMesh);
-	Object3D lightCube = Object3D(&cubeMesh);
+	cubeMesh->gpuBuffer = api->CreateGpuBuffer(cubeMesh->vertices, cubeMesh->indices);
+
+	Object3D cube = Object3D(cubeMesh);
+	Object3D lightCube = Object3D(cubeMesh);
 
     Texture texture1("../assets/serble_logo.png", GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, true);
     Texture texture2("../assets/aXR5PTgw.png", GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, true);
@@ -116,16 +116,18 @@ int main() {
 	cube.textures.push_back(&texture1);
 	cube.textures.push_back(&texture2);
 
-	cube.bindMeshBuffers();
-	lightCube.bindMeshBuffers();
+	cube.shader = &ourShader;
+	lightCube.shader = &testShader;
 
 	// Uncomment for wireframe view.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.11f, 0.11f, 0.12f, 1.0f);
+	api->registerObject(&cube);
+	api->registerObject(&lightCube);
 
 	while(!window->shouldWindowClose()) {
+		api->setClearColour(0.11f, 0.11f, 0.12f, 1.0f);
+
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -143,17 +145,13 @@ int main() {
 		shaderManager.injectGlobals(view, projection);
 
 		cube.rotation = {0, (glfwGetTime() * 5.0f) * 50.0f, 0};
-		cube.draw(ourShader);
-
 		lightCube.position = {-2, 0, 0};
-		lightCube.draw(testShader);
+
+		api->drawRegisteredObjects();
 
         // Check and call events and swap the buffers
         window->swapBuffers();
-        glfwPollEvents();
     }
-
-    cube.deleteBuffers();
 
     glfwTerminate();
     return 0;
