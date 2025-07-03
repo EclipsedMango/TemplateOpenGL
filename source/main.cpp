@@ -22,8 +22,6 @@ constexpr int windowWidth = 1200;
 constexpr int windowHeight = 800;
 
 Camera camera(glm::vec3(0.0f, 0.0f, 0.3f));
-float deltaTime = 0.0f;
-float lastFrame = 0.0f;
 
 void countFrames();
 
@@ -119,24 +117,17 @@ int main() {
 	cube.shader = &ourShader;
 	lightCube.shader = &testShader;
 
-	// Uncomment for wireframe view.
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
 	api->registerObject(&cube);
 	api->registerObject(&lightCube);
 
 	while(!window->shouldWindowClose()) {
+		api->startDrawing();
 		api->setClearColour(0.11f, 0.11f, 0.12f, 1.0f);
 
-        float currentFrame = glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
+		float deltaTime = api->getFrameTime();
 
 		countFrames();
         window->processInput(deltaTime, camera);
-
-		// Rendering
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Global shader values.
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), 
@@ -148,9 +139,7 @@ int main() {
 		lightCube.position = {-2, 0, 0};
 
 		api->drawRegisteredObjects();
-
-        // Check and call events and swap the buffers
-        window->swapBuffers();
+		api->endDrawing(window);
     }
 
     glfwTerminate();
